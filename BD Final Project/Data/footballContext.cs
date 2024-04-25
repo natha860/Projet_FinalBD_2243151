@@ -27,6 +27,7 @@ namespace BD_Final_Project.Data
         public virtual DbSet<Saison> Saisons { get; set; } = null!;
         public virtual DbSet<Stade> Stades { get; set; } = null!;
         public virtual DbSet<Trophee> Trophees { get; set; } = null!;
+        public virtual DbSet<VwGestionDesEquipe> VwGestionDesEquipes { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -123,6 +124,11 @@ namespace BD_Final_Project.Data
                     .HasForeignKey(d => d.EquipeId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_Stade_EquipeID");
+            });
+
+            modelBuilder.Entity<VwGestionDesEquipe>(entity =>
+            {
+                entity.ToView("vw_GestionDesEquipes", "Equipes");
             });
 
             OnModelCreatingPartial(modelBuilder);

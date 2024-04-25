@@ -3,10 +3,8 @@
 USE football;
 GO
 
-CREATE SCHEMA Championnats;
-GO
-CREATE SCHEMA Equipes;
-GO
+
+
 
 
 -- Table Championnat

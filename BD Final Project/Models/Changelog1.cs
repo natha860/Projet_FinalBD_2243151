@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BD_Final_Project.Models
 {
-    [Table("changelog", Schema = "Championnats")]
-    public partial class Changelog
+    [Table("changelog")]
+    public partial class Changelog1
     {
         [Key]
         [Column("id")]

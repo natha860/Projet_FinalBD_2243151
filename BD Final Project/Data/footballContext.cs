@@ -19,6 +19,7 @@ namespace BD_Final_Project.Data
 
         public virtual DbSet<Championnat> Championnats { get; set; } = null!;
         public virtual DbSet<Changelog> Changelogs { get; set; } = null!;
+        public virtual DbSet<Changelog1> Changelogs1 { get; set; } = null!;
         public virtual DbSet<ChangementClub> ChangementClubs { get; set; } = null!;
         public virtual DbSet<Equipe> Equipes { get; set; } = null!;
         public virtual DbSet<Joueur> Joueurs { get; set; } = null!;
@@ -40,6 +41,11 @@ namespace BD_Final_Project.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Changelog>(entity =>
+            {
+                entity.Property(e => e.InstalledOn).HasDefaultValueSql("(getdate())");
+            });
+
+            modelBuilder.Entity<Changelog1>(entity =>
             {
                 entity.Property(e => e.InstalledOn).HasDefaultValueSql("(getdate())");
             });

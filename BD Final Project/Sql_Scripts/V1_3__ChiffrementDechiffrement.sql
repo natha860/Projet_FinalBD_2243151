@@ -31,7 +31,7 @@ as
 begin
 Open SYMMETRIC KEY MaSuperCle
 DECRYPTION BY CERTIFICATE MonCertificat;
-select CONVERT(char(9), DECRYPTBYKEY(NAS))  from Equipes.Equipe
+select CONVERT(char(9), DECRYPTBYKEY(NAS))  from Equipes.Joueur
 CLOSE SYMMETRIC KEY MaSuperCle;
 
 

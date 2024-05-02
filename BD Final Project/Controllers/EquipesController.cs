@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BD_Final_Project.Data;
 using BD_Final_Project.Models;
+using Microsoft.Data.SqlClient;
 
 namespace BD_Final_Project.Controllers
 {
@@ -20,16 +21,24 @@ namespace BD_Final_Project.Controllers
         }
 
         // GET: Equipes
-        public async Task<IActionResult> AncienIndex()
+        public async Task<IActionResult> AncienIndex(int id)
         {
-            var footballContext = _context.Equipes.Include(e => e.Championnat);
-            return View(await footballContext.ToListAsync());
+            Equipe equipe = await _context.Equipes.FindAsync(id);
+            if(equipe == null) { return NotFound(); }
+            string query = "EXEC Equipes.usp_stadeAppartennance @nomEquipe";
+            List<SqlParameter> parameters = new List<SqlParameter>
+            {
+                new SqlParameter{ParameterName = "@nomEquipe", Value = equipe.Nom}
+
+            };
+            List<VwGestionDesEquipe> footballVW = await _context.VwGestionDesEquipes.FromSqlRaw(query, parameters.ToArray()).ToListAsync();
+            return View(footballVW);
         }
 
         // GET: Equipes
         public async Task<IActionResult> Index()
         {
-            var footballContext = _context.VwGestionDesEquipes.Where(j => j.Joueur != null).OrderBy(E => E.Equipe);
+            var footballContext = _context.Equipes.Include(e => e.Championnat);
             return View(await footballContext.ToListAsync());
         }
 

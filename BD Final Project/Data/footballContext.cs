@@ -19,9 +19,9 @@ namespace BD_Final_Project.Data
 
         public virtual DbSet<Championnat> Championnats { get; set; } = null!;
         public virtual DbSet<Changelog> Changelogs { get; set; } = null!;
-        public virtual DbSet<Changelog1> Changelogs1 { get; set; } = null!;
         public virtual DbSet<ChangementClub> ChangementClubs { get; set; } = null!;
         public virtual DbSet<Equipe> Equipes { get; set; } = null!;
+        public virtual DbSet<Image> Images { get; set; } = null!;
         public virtual DbSet<Joueur> Joueurs { get; set; } = null!;
         public virtual DbSet<Match> Matches { get; set; } = null!;
         public virtual DbSet<Palmare> Palmares { get; set; } = null!;
@@ -45,17 +45,25 @@ namespace BD_Final_Project.Data
                 entity.Property(e => e.InstalledOn).HasDefaultValueSql("(getdate())");
             });
 
-            modelBuilder.Entity<Changelog1>(entity =>
-            {
-                entity.Property(e => e.InstalledOn).HasDefaultValueSql("(getdate())");
-            });
-
             modelBuilder.Entity<Equipe>(entity =>
             {
                 entity.HasOne(d => d.Championnat)
                     .WithMany(p => p.Equipes)
                     .HasForeignKey(d => d.ChampionnatId)
                     .HasConstraintName("FK_Equipe_ChampionnatID");
+            });
+
+            modelBuilder.Entity<Image>(entity =>
+            {
+                entity.HasKey(e => e.ImagesId)
+                    .HasName("PK_Images_ImagesID");
+
+                entity.Property(e => e.Identifiant).HasDefaultValueSql("(newid())");
+
+                entity.HasOne(d => d.Joueur)
+                    .WithMany(p => p.Images)
+                    .HasForeignKey(d => d.JoueurId)
+                    .HasConstraintName("FK_Images_JoueurID");
             });
 
             modelBuilder.Entity<Joueur>(entity =>

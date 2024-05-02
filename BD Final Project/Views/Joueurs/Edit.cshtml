@@ -1,0 +1,67 @@
+﻿@model BD_Final_Project.Models.Joueur
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Joueur</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="JoueurId" />
+            <div class="form-group">
+                <label asp-for="Nom" class="control-label"></label>
+                <input asp-for="Nom" class="form-control" />
+                <span asp-validation-for="Nom" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DateNaissance" class="control-label"></label>
+                <input asp-for="DateNaissance" class="form-control" />
+                <span asp-validation-for="DateNaissance" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Position" class="control-label"></label>
+                <input asp-for="Position" class="form-control" />
+                <span asp-validation-for="Position" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Nationalite" class="control-label"></label>
+                <input asp-for="Nationalite" class="form-control" />
+                <span asp-validation-for="Nationalite" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EquipeId" class="control-label"></label>
+                <select asp-for="EquipeId" class="form-control" asp-items="ViewBag.EquipeId"></select>
+                <span asp-validation-for="EquipeId" class="text-danger"></span>
+            </div>
+           
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+
+        <form asp-action="EditNAS">
+            <div class="form-group" >
+                <label asp-for="Nas" class="control-label"></label>
+                <input asp-for="Nas" class="form-control" />
+                <input type="hidden" asp-for="JoueurId" />
+                <span asp-validation-for="Nas" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save NAS" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

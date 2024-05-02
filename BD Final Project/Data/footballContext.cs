@@ -23,6 +23,7 @@ namespace BD_Final_Project.Data
         public virtual DbSet<Equipe> Equipes { get; set; } = null!;
         public virtual DbSet<Image> Images { get; set; } = null!;
         public virtual DbSet<Joueur> Joueurs { get; set; } = null!;
+        public virtual DbSet<JoueurRetour> JoueurRetours { get; set; } = null!;
         public virtual DbSet<Match> Matches { get; set; } = null!;
         public virtual DbSet<Palmare> Palmares { get; set; } = null!;
         public virtual DbSet<Saison> Saisons { get; set; } = null!;
@@ -73,6 +74,17 @@ namespace BD_Final_Project.Data
                     .HasForeignKey(d => d.EquipeId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_Joueur_EquipeID");
+            });
+
+            modelBuilder.Entity<JoueurRetour>(entity =>
+            {
+                entity.Property(e => e.Nas).IsFixedLength();
+
+                entity.HasOne(d => d.Joueur)
+                    .WithMany()
+                    .HasForeignKey(d => d.JoueurId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_JoueurRetour_JoueurID");
             });
 
             modelBuilder.Entity<Match>(entity =>

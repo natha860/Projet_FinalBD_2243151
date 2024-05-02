@@ -21,7 +21,17 @@ where @JoueurId = JoueurID
 end
 go
 
---drop procedure Equipes.USP_ChangeNas
+
+create table Equipes.JoueurRetour(
+JoueurID int not null,
+Nas Char(9) not null
+)
+go
+
+alter table Equipes.JoueurRetour add constraint FK_JoueurRetour_JoueurID
+foreign key(JoueurID)
+references Equipes.Joueur (JoueurID)
+go
 
 Create procedure Equipes.USP_DEChiffrement
 @NAS char(9),
@@ -31,7 +41,8 @@ as
 begin
 Open SYMMETRIC KEY MaSuperCle
 DECRYPTION BY CERTIFICATE MonCertificat;
-select CONVERT(char(9), DECRYPTBYKEY(NAS))  from Equipes.Joueur
+select JoueurID, CONVERT(char(9), DECRYPTBYKEY(NAS)) as [Nas]  from Equipes.Joueur
+where JoueurID = @JoueurId
 CLOSE SYMMETRIC KEY MaSuperCle;
 
 

@@ -27,15 +27,15 @@ GO
 
 	INSERT INTO Equipes.Images(JoueurID,Photo)
 SELECT 1, BulkColumn FROM OPENROWSET(
-	BULK 'C:\Users\Admin\Downloads\Projet_FinalBD\BD Final Project\joueurs images\mobutu.jpg', SINGLE_BLOB) AS myfile
+	BULK 'C:\Users\2243151\Downloads\Projet_FinalBD\BD Final Project\joueurs images\mobutu.jpg', SINGLE_BLOB) AS myfile
 
 		INSERT INTO Equipes.Images(JoueurID,Photo)
 SELECT 2, BulkColumn FROM OPENROWSET(
-	BULK 'C:\Users\Admin\Downloads\Projet_FinalBD\BD Final Project\joueurs images\mobutu.jpg', SINGLE_BLOB) AS myfile
+	BULK 'C:\Users\2243151\Downloads\Projet_FinalBD\BD Final Project\joueurs images\mobutu.jpg', SINGLE_BLOB) AS myfile
 
 		INSERT INTO Equipes.Images(JoueurID,Photo)
 SELECT 3, BulkColumn FROM OPENROWSET(
-	BULK 'C:\Users\Admin\Downloads\Projet_FinalBD\BD Final Project\joueurs images\mobutu.jpg', SINGLE_BLOB) AS myfile
+	BULK 'C:\Users\2243151\Downloads\Projet_FinalBD\BD Final Project\joueurs images\mobutu.jpg', SINGLE_BLOB) AS myfile
 		INSERT INTO Equipes.Images(JoueurID,Photo)
 SELECT 4, BulkColumn FROM OPENROWSET(
-	BULK 'C:\Users\Admin\Downloads\Projet_FinalBD\BD Final Project\joueurs images\mobutu.jpg', SINGLE_BLOB) AS myfile
+	BULK 'C:\Users\2243151\Downloads\Projet_FinalBD\BD Final Project\joueurs images\mobutu.jpg', SINGLE_BLOB) AS myfile

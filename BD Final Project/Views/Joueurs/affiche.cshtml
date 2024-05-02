@@ -1,0 +1,57 @@
+﻿@model BD_Final_Project.ViewModel.JoueurDechiffrerVM
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Joueur</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Joueur.Nom)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Joueur.Nom)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Joueur.DateNaissance)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Joueur.DateNaissance)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Joueur.Position)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Joueur.Position)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Joueur.Nationalite)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Joueur.Nationalite)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.joueurRetour.Nas)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.joueurRetour.Nas)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Joueur.Equipe)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Joueur.Equipe.Nom)
+        </dd>
+    </dl>
+</div>
+
+
+
+<div>
+  
+    <a asp-action="Index">Back to List</a>
+</div>

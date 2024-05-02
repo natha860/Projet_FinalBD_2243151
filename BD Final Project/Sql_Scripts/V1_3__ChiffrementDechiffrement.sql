@@ -34,9 +34,7 @@ DECRYPTION BY CERTIFICATE MonCertificat;
 select CONVERT(char(9), DECRYPTBYKEY(NAS))  from Equipes.Equipe
 CLOSE SYMMETRIC KEY MaSuperCle;
 
-update Equipes.Joueur
-set NAS = @NasCHIFFRE
-where @JoueurId = JoueurID
+
 
 end
 go

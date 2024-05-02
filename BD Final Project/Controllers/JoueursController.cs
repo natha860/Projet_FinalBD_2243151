@@ -16,7 +16,7 @@ namespace BD_Final_Project.Controllers
     {
         private readonly footballContext _context;
 
-        public bool dechiffer;
+      
 
         public JoueursController(footballContext context)
         {
@@ -26,28 +26,68 @@ namespace BD_Final_Project.Controllers
         // GET: Joueurs
         public async Task<IActionResult> Index()
         {
+            if (_context.Images == null)
+            {
+                return Problem("Entity set'football.Images' is null");
+            }
             var footballContext = _context.Joueurs.Include(j => j.Equipe);
-            return View(await footballContext.ToListAsync());
+            //var i = _context.Images.Include(e => e.Joueur);
+
+            List<ImageVM> ivm = await _context.Joueurs.Include(e => e.Equipe)
+                .Select(x => new ImageVM
+                {
+                    Image = x.Images.Where(i => i.JoueurId == x.JoueurId).FirstOrDefault(),
+                    fichierImage = x.Images.Where(i => i.JoueurId == x.JoueurId).FirstOrDefault().Photo == null ? null : $"data:image/png;base64,{Convert.ToBase64String(x.Images.Where(i => i.JoueurId == x.JoueurId).FirstOrDefault().Photo)}",
+                    Joueurs = x
+
+                })
+                .ToListAsync();
+
+
+
+
+
+
+
+
+
+            return View(ivm);
         }
 
         // GET: Joueurs/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            dechiffer = false;
+           
             if (id == null || _context.Joueurs == null)
             {
                 return NotFound();
             }
 
             var joueur = await _context.Joueurs
-                .Include(j => j.Equipe)
+                .Include(j => j.Equipe).Include(e => e.Images)
                 .FirstOrDefaultAsync(m => m.JoueurId == id);
             if (joueur == null)
             {
                 return NotFound();
             }
 
-            return View(joueur);
+
+            Image image = joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault();
+            string fichier = joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault().Photo == null ? null : $"data:image/png;base64,{Convert.ToBase64String(joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault().Photo)}";
+            
+            ImageVM ivm = new ImageVM
+            {
+                Image = joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault(),
+                fichierImage = joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault().Photo == null ? null : $"data:image/png;base64,{Convert.ToBase64String(joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault().Photo)}",
+                Joueurs = joueur,
+                Nas = joueur.Nas,
+                JoueurId = joueur.JoueurId,
+
+            };
+
+            return View(ivm);
+
+           
         }
 
         // GET: Joueurs/Create

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BD_Final_Project.Models.Joueur>
+﻿@model IEnumerable<BD_Final_Project.ViewModel.ImageVM>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,20 +13,23 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Nom)
+                @Html.DisplayNameFor(model => model.Joueurs.Nom)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DateNaissance)
+                @Html.DisplayNameFor(model => model.Joueurs.DateNaissance)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Position)
+                @Html.DisplayNameFor(model => model.Joueurs.Position)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Nationalite)
+                @Html.DisplayNameFor(model => model.Joueurs.Nationalite)
             </th>
         
             <th>
-                @Html.DisplayNameFor(model => model.Equipe)
+                @Html.DisplayNameFor(model => model.Joueurs.Equipe)
+            </th>
+            <th>
+                image
             </th>
             <th></th>
         </tr>
@@ -35,25 +38,28 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Nom)
+                    @Html.DisplayFor(modelItem => item.Joueurs.Nom)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DateNaissance)
+                    @Html.DisplayFor(modelItem => item.Joueurs.DateNaissance)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Position)
+                    @Html.DisplayFor(modelItem => item.Joueurs.Position)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Nationalite)
+                    @Html.DisplayFor(modelItem => item.Joueurs.Nationalite)
             </td>
            
             <td>
-                @Html.DisplayFor(modelItem => item.Equipe.EquipeId)
+                    @Html.DisplayFor(modelItem => item.Joueurs.Equipe.Nom)
             </td>
+                <td>
+                    <img alt="@(item.Joueurs.Nom)" src="@(item.fichierImage)" width="200" height="200" />
+                </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.JoueurId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.JoueurId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.JoueurId">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Joueurs.JoueurId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Joueurs.JoueurId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Joueurs.JoueurId">Delete</a>
             </td>
         </tr>
 }

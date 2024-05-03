@@ -73,19 +73,36 @@ namespace BD_Final_Project.Controllers
 
 
             Image image = joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault();
-            string fichier = joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault().Photo == null ? null : $"data:image/png;base64,{Convert.ToBase64String(joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault().Photo)}";
-            
-            ImageVM ivm = new ImageVM
+            //string fichier = joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault().Photo == null ? null : $"data:image/png;base64,{Convert.ToBase64String(joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault().Photo)}";
+            if(joueur.Images.Count  <= 0)
             {
-                Image = joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault(),
-                fichierImage = joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault().Photo == null ? null : $"data:image/png;base64,{Convert.ToBase64String(joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault().Photo)}",
-                Joueurs = joueur,
-                Nas = joueur.Nas,
-                JoueurId = joueur.JoueurId,
+                ImageVM ivm = new ImageVM
+                {
+                    Image = joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault(),
+                    Joueurs = joueur,
+                    Nas = joueur.Nas,
+                    JoueurId = joueur.JoueurId,
 
-            };
+                };
+                return View(ivm);
+            }
+            else
+            {
+                ImageVM ivm = new ImageVM
+                {
+                    Image = joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault(),
+                    fichierImage = joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault().Photo == null ? null : $"data:image/png;base64,{Convert.ToBase64String(joueur.Images.Where(i => i.JoueurId == joueur.JoueurId).FirstOrDefault().Photo)}",
+                    Joueurs = joueur,
+                    Nas = joueur.Nas,
+                    JoueurId = joueur.JoueurId,
 
-            return View(ivm);
+                };
+                return View(ivm);
+            }
+
+            
+
+           
 
            
         }
@@ -93,7 +110,7 @@ namespace BD_Final_Project.Controllers
         // GET: Joueurs/Create
         public IActionResult Create()
         {
-            ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "EquipeId");
+            ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "Nom");
             return View();
         }
 
@@ -102,16 +119,45 @@ namespace BD_Final_Project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("JoueurId,Nom,DateNaissance,Position,Nationalite,EquipeId")] Joueur joueur)
+        public async Task<IActionResult> Create(ImageUploadVM image)
         {
-            if (ModelState.IsValid)
+           
+
+            if (image.Joueurs != null )
             {
-                _context.Add(joueur);
+              
+
+                _context.Add(image.Joueurs);
                 await _context.SaveChangesAsync();
+                Joueur joueur =  _context.Joueurs.ToList().OrderByDescending(c=> c.JoueurId).FirstOrDefault();
+                string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
+                List<SqlParameter> parameters = new List<SqlParameter>
+                     {
+                         new SqlParameter{ParameterName = "@NAS", Value = image.Nas},
+                         new SqlParameter{ParameterName = "@JoueurId", Value = joueur.JoueurId}
+
+                          };
+                var exec = await _context.Database.ExecuteSqlRawAsync(query, parameters);
+
+                if (image.FormFile != null && image.FormFile.Length >= 0)
+                {
+                    MemoryStream stream = new MemoryStream();
+                    await image.FormFile.CopyToAsync(stream);
+                    byte[] fichier = stream.ToArray();
+
+                    Image i = new Image()
+                    {
+                        JoueurId = joueur.JoueurId,
+                        Photo = fichier
+                    };
+                    image.Joueurs.Images.Add(i);
+                    _context.Update(joueur);
+                    await _context.SaveChangesAsync();
+                }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "EquipeId", joueur.EquipeId);
-            return View(joueur);
+            ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "Nom", image.Joueurs.Nom);
+            return View(image);
         }
 
         // GET: Joueurs/Edit/5
@@ -127,8 +173,15 @@ namespace BD_Final_Project.Controllers
             {
                 return NotFound();
             }
+
+            ImageUploadVM i = new ImageUploadVM()
+            {
+                Joueurs = joueur,
+               
+               
+            };
             ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "EquipeId", joueur.EquipeId);
-            return View(joueur);
+            return View(i);
         }
 
         // POST: Joueurs/Edit/5
@@ -136,23 +189,67 @@ namespace BD_Final_Project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("JoueurId,Nom,DateNaissance,Position,Nationalite,EquipeId")] Joueur joueur)
+        public async Task<IActionResult> Edit(int id, ImageUploadVM image)
         {
-            if (id != joueur.JoueurId)
+            if (id != image.Joueurs.JoueurId)
             {
                 return NotFound();
             }
-
+            
+            
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(joueur);
+                   
+                    _context.Update(image.Joueurs);
                     await _context.SaveChangesAsync();
+                    var joueur = _context.Joueurs.Include(e => e.Images).Where( i => i.JoueurId == id).SingleOrDefault();
+                
+                    if (joueur == null)
+                    {
+                        return NotFound();
+                    }
+
+                    string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
+                    List<SqlParameter> parameters = new List<SqlParameter>
+                     {
+                         new SqlParameter{ParameterName = "@NAS", Value = image.Nas},
+                         new SqlParameter{ParameterName = "@JoueurId", Value = image.Joueurs.JoueurId}
+
+                          };
+                    var exec = await _context.Database.ExecuteSqlRawAsync(query, parameters);
+                    if (image.FormFile != null && image.FormFile.Length >= 0)
+                    {
+                        MemoryStream stream = new MemoryStream();
+                        await image.FormFile.CopyToAsync(stream);
+                        byte[] fichier = stream.ToArray();
+                        if (joueur.Images.FirstOrDefault() == null )
+                        {
+                            Image i = new Image()
+                            {
+                                JoueurId = joueur.JoueurId,
+                                Photo = fichier
+                            };
+                            joueur.Images.Add(i);
+                            _context.Update(joueur);
+                            await _context.SaveChangesAsync();
+
+                        }
+                        else
+                        {
+                            joueur.Images.FirstOrDefault().Photo = fichier;
+                            _context.Update(joueur);
+                            await _context.SaveChangesAsync();
+                        }
+                       
+
+                    }
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!JoueurExists(joueur.JoueurId))
+                    if (!JoueurExists(image.Joueurs.JoueurId))
                     {
                         return NotFound();
                     }
@@ -163,54 +260,55 @@ namespace BD_Final_Project.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "EquipeId", joueur.EquipeId);
-            return View(joueur);
+            ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "EquipeId", image.Joueurs.EquipeId);
+            return View(image);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditNAS(int JoueurId, string Nas)
-        {
-            Joueur joueur = await _context.Joueurs.FindAsync(JoueurId);
 
-            if (JoueurId != joueur.JoueurId || joueur == null)
-            {
-                return NotFound();
-            }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> EditNAS(int JoueurId, string Nas, [Bind("FormFile,Joueurs")] ImageUploadVM image)
+        //{
+        //    Joueur joueur = await _context.Joueurs.FindAsync(JoueurId);
+
+        //    if (JoueurId != joueur.JoueurId || joueur == null)
+        //    {
+        //        return NotFound();
+        //    }
 
 
           
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
-                    List<SqlParameter> parameters = new List<SqlParameter>
-                     {
-                         new SqlParameter{ParameterName = "@NAS", Value = Nas},
-                         new SqlParameter{ParameterName = "@JoueurId", Value = JoueurId}
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
+        //            List<SqlParameter> parameters = new List<SqlParameter>
+        //             {
+        //                 new SqlParameter{ParameterName = "@NAS", Value = Nas},
+        //                 new SqlParameter{ParameterName = "@JoueurId", Value = JoueurId}
 
-                          };
-                    await _context.Database.ExecuteSqlRawAsync(query, parameters);
+        //                  };
+        //            await _context.Database.ExecuteSqlRawAsync(query, parameters);
 
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!JoueurExists(joueur.JoueurId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "EquipeId", joueur.EquipeId);
-            return View("Edit",joueur);
-        }
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!JoueurExists(joueur.JoueurId))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "EquipeId", joueur.EquipeId);
+        //    return View("Edit",joueur);
+        //}
 
 
         [HttpPost]
@@ -227,27 +325,31 @@ namespace BD_Final_Project.Controllers
 
 
 
-            string query = "EXEC Equipes.USP_DEChiffrement @NAS, @JoueurId, @AdminKey";
-            List<SqlParameter> parameters = new List<SqlParameter>
+            if (Nas != null && Nas !="" && JoueurId != 0)
+            {
+                string query = "EXEC Equipes.USP_DEChiffrement @NAS, @JoueurId, @AdminKey";
+                List<SqlParameter> parameters = new List<SqlParameter>
                      {
                          new SqlParameter{ParameterName = "@NAS", Value = Nas},
                          new SqlParameter{ParameterName = "@JoueurId", Value = JoueurId},
                          new SqlParameter{ParameterName = "@AdminKey", Value = ""}
                           };
-            JoueurRetour? joueurRetour = (await _context.JoueurRetours.FromSqlRaw(query, parameters.ToArray()).ToListAsync()).FirstOrDefault();
-            
-            JoueurDechiffrerVM joueurDechiffrerVM = new JoueurDechiffrerVM
-            {
-                joueurRetour = joueurRetour, Joueur = joueur
+                JoueurRetour? joueurRetour = (await _context.JoueurRetours.FromSqlRaw(query, parameters.ToArray()).ToListAsync()).FirstOrDefault();
 
-        };
+                JoueurDechiffrerVM joueurDechiffrerVM = new JoueurDechiffrerVM
+                {
+                    joueurRetour = joueurRetour,
+                    Joueur = joueur
 
-            ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "EquipeId", joueur.EquipeId);
+                };
 
-            return View(joueurDechiffrerVM);
-            
-           
-            
+                ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "EquipeId", joueur.EquipeId);
+
+                return View(joueurDechiffrerVM);
+            }
+
+            return View();
+
         }
 
         // GET: Joueurs/Delete/5

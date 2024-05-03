@@ -1,4 +1,4 @@
-﻿@model BD_Final_Project.Models.Joueur
+﻿@model BD_Final_Project.ViewModel.ImageUploadVM
 
 @{
     ViewData["Title"] = "Create";
@@ -10,33 +10,44 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Nom" class="control-label"></label>
-                <input asp-for="Nom" class="form-control" />
-                <span asp-validation-for="Nom" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateNaissance" class="control-label"></label>
-                <input asp-for="DateNaissance" class="form-control" />
-                <span asp-validation-for="DateNaissance" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Position" class="control-label"></label>
-                <input asp-for="Position" class="form-control" />
-                <span asp-validation-for="Position" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Nationalite" class="control-label"></label>
-                <input asp-for="Nationalite" class="form-control" />
-                <span asp-validation-for="Nationalite" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EquipeId" class="control-label"></label>
-                <select asp-for="EquipeId" class ="form-control" asp-items="ViewBag.EquipeId"></select>
-            </div>
+            <input type="hidden" asp-for="Joueurs.JoueurId" />
            
+            <div class="form-group">
+                <label asp-for="Joueurs.Nom" class="control-label"></label>
+                <input asp-for="Joueurs.Nom" class="form-control" />
+                <span asp-validation-for="Joueurs.Nom" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Joueurs.DateNaissance" class="control-label"></label>
+                <input asp-for="Joueurs.DateNaissance" class="form-control" />
+                <span asp-validation-for="Joueurs.DateNaissance" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Joueurs.Position" class="control-label"></label>
+                <input asp-for="Joueurs.Position" class="form-control" />
+                <span asp-validation-for="Joueurs.Position" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Joueurs.Nationalite" class="control-label"></label>
+                <input asp-for="Joueurs.Nationalite" class="form-control" />
+                <span asp-validation-for="Joueurs.Nationalite" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Joueurs.EquipeId" class="control-label"></label>
+                <select asp-for="Joueurs.EquipeId" class="form-control" asp-items="ViewBag.EquipeId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="FormFile"> fichier image:</label>
+                <input id="FormFile" name="FormFile" type="file" accept="image/*" class="form-control-file" />
+                <span asp-validation-for="FormFile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Nas" class="control-label"></label>
+                <input asp-for="Nas" class="form-control" />
+                <span asp-validation-for="Nas" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

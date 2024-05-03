@@ -73,8 +73,9 @@ namespace BD_Final_Project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EquipeId,Nom,AnneeDeFondation,Ville,ChampionnatId")] Equipe equipe)
+        public async Task<IActionResult> Create([Bind("Nom,AnneeDeFondation,Ville,ChampionnatId")] Equipe equipe)
         {
+
             if (ModelState.IsValid)
             {
                 _context.Add(equipe);

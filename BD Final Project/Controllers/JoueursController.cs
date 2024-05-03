@@ -130,14 +130,7 @@ namespace BD_Final_Project.Controllers
                 _context.Add(image.Joueurs);
                 await _context.SaveChangesAsync();
                 Joueur joueur =  _context.Joueurs.ToList().OrderByDescending(c=> c.JoueurId).FirstOrDefault();
-                string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
-                List<SqlParameter> parameters = new List<SqlParameter>
-                     {
-                         new SqlParameter{ParameterName = "@NAS", Value = image.Nas},
-                         new SqlParameter{ParameterName = "@JoueurId", Value = joueur.JoueurId}
-
-                          };
-                var exec = await _context.Database.ExecuteSqlRawAsync(query, parameters);
+               
 
                 if (image.FormFile != null && image.FormFile.Length >= 0)
                 {
@@ -153,6 +146,14 @@ namespace BD_Final_Project.Controllers
                     image.Joueurs.Images.Add(i);
                     _context.Update(joueur);
                     await _context.SaveChangesAsync();
+                    string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
+                    List<SqlParameter> parameters = new List<SqlParameter>
+                     {
+                         new SqlParameter{ParameterName = "@NAS", Value = image.Nas},
+                         new SqlParameter{ParameterName = "@JoueurId", Value = joueur.JoueurId}
+
+                          };
+                    await _context.Database.ExecuteSqlRawAsync(query, parameters);
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -199,6 +200,7 @@ namespace BD_Final_Project.Controllers
             
             if (ModelState.IsValid)
             {
+              
                 try
                 {
                    
@@ -211,14 +213,7 @@ namespace BD_Final_Project.Controllers
                         return NotFound();
                     }
 
-                    string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
-                    List<SqlParameter> parameters = new List<SqlParameter>
-                     {
-                         new SqlParameter{ParameterName = "@NAS", Value = image.Nas},
-                         new SqlParameter{ParameterName = "@JoueurId", Value = image.Joueurs.JoueurId}
-
-                          };
-                    var exec = await _context.Database.ExecuteSqlRawAsync(query, parameters);
+                  
                     if (image.FormFile != null && image.FormFile.Length >= 0)
                     {
                         MemoryStream stream = new MemoryStream();
@@ -234,6 +229,14 @@ namespace BD_Final_Project.Controllers
                             joueur.Images.Add(i);
                             _context.Update(joueur);
                             await _context.SaveChangesAsync();
+                            string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
+                            List<SqlParameter> parameters = new List<SqlParameter>
+                     {
+                         new SqlParameter{ParameterName = "@NAS", Value = image.Nas},
+                         new SqlParameter{ParameterName = "@JoueurId", Value = image.Joueurs.JoueurId}
+
+                          };
+                            await _context.Database.ExecuteSqlRawAsync(query, parameters);
 
                         }
                         else
@@ -241,8 +244,28 @@ namespace BD_Final_Project.Controllers
                             joueur.Images.FirstOrDefault().Photo = fichier;
                             _context.Update(joueur);
                             await _context.SaveChangesAsync();
+                            string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
+                            List<SqlParameter> parameters = new List<SqlParameter>
+                     {
+                         new SqlParameter{ParameterName = "@NAS", Value = image.Nas},
+                         new SqlParameter{ParameterName = "@JoueurId", Value = image.Joueurs.JoueurId}
+
+                          };
+                            await _context.Database.ExecuteSqlRawAsync(query, parameters);
                         }
-                       
+
+
+                    }
+                    else
+                    {
+                        string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
+                        List<SqlParameter> parameters = new List<SqlParameter>
+                     {
+                         new SqlParameter{ParameterName = "@NAS", Value = image.Nas},
+                         new SqlParameter{ParameterName = "@JoueurId", Value = image.Joueurs.JoueurId}
+
+                          };
+                        await _context.Database.ExecuteSqlRawAsync(query, parameters);
 
                     }
 
@@ -394,5 +417,40 @@ namespace BD_Final_Project.Controllers
         {
           return (_context.Joueurs?.Any(e => e.JoueurId == id)).GetValueOrDefault();
         }
+
+        public IActionResult Recherche()
+        {
+            ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "Nom");
+            return View(new JoueurPalmaresVM() { Nom ="", EquipeId=1});
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Recherche(JoueurPalmaresVM jpvm)
+        {
+            DateTime tempsAvant = DateTime.Now;
+            if (_context.Trophees == null || _context.Joueurs == null || _context.Palmares == null)
+            {
+                ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "Nom");
+                return Problem("An entity set from 'football' is null.");
+            }
+            Joueur joueur = await _context.Joueurs.Include(e => e.Equipe).Include(t => t.Palmares).ThenInclude(p => p.Trophee).FirstOrDefaultAsync(x => x.Nom == jpvm.Nom && x.Equipe.EquipeId == jpvm.EquipeId);
+
+            if (joueur == null)
+            {
+                ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "Nom");
+                ModelState.AddModelError("", "Ce joueur n'existe pas.");
+                return View();
+            }
+
+            jpvm.trophees = joueur.Palmares.Select(t => t.Trophee).ToList();
+            DateTime tempsApres = DateTime.Now;
+            ViewData["temps"] = tempsApres.Subtract(tempsAvant).TotalMilliseconds;
+            ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "Nom");
+            return View(jpvm);
+        }
+
+
     }
 }

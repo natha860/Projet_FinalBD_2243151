@@ -1,0 +1,72 @@
+﻿@model BD_Final_Project.ViewModel.JoueurPalmaresVM
+
+@{
+    ViewData["Title"] = "recherche";
+}
+
+<h1>recherche</h1>
+
+<a asp-action="Index">Retour à l'index</a>
+<h2>rechercher les trophée d'un joueur'</h2>
+
+<form asp-action="Recherche" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="EquipeId" class="control-label"></label>
+        <select asp-for="EquipeId" class="form-control" asp-items="ViewBag.EquipeId"></select>
+    </div>
+    <div class="form-group">
+        <label asp-for="Nom" class="control-label"></label>
+        <input asp-for="Nom" class="form-control" />
+        <span asp-validation-for="Nom" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Chercher" class="btn btn-primary" />
+    </div>
+</form>
+
+<p>Temps de la requête : @ViewData["temps"] millisecondes</p>
+
+@if (Model.trophees != null)
+{
+    <h3>liste des trophée </h3>
+    <ul>
+       
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Nom
+                        </th>
+                        <th>
+                            Annee
+                        </th>
+                        <th>
+                            Categorie
+                        </th>
+                        
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.trophees)
+                {
+                        <tr>
+                            <td>
+                             @item.Nom
+                            </td>
+                            <td>
+                            @item.Annee
+                            </td>
+                            <td>
+                            @item.Categorie
+                            </td>
+                        </tr>
+                }
+                </tbody>
+              
+            </table>
+      
+    </ul>
+}
+

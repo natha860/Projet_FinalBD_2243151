@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BD_Final_Project.Models
 {
     [Table("Palmares", Schema = "Equipes")]
+    [Index("JoueurId", "TropheeId", Name = "IX_Joueur_PalmaresID_TropheeID")]
     public partial class Palmare
     {
         [Key]

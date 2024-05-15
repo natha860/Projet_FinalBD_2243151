@@ -14,16 +14,7 @@
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Nom)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AnneeDeFondation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ville)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Championnat)
-            </th>
+            </th>    
             <th></th>
         </tr>
     </thead>
@@ -35,19 +26,10 @@
                     @Html.DisplayFor(modelItem => item.Nom)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.AnneeDeFondation)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Ville)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Championnat.Nom)
-                </td>
-                <td>
                     <a asp-action="Edit" asp-route-id="@item.EquipeId">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.EquipeId">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.EquipeId">Delete</a>|
-                    <a asp-action="AncienIndex" asp-route-id="@item.EquipeId">plus de détail</a>
+                    <a asp-action="DetailSuplementaire" asp-route-id="@item.EquipeId">plus de détail</a>
                 </td>
             </tr>
         }

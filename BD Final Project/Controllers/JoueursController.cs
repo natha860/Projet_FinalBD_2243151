@@ -146,15 +146,14 @@ namespace BD_Final_Project.Controllers
                     image.Joueurs.Images.Add(i);
                     _context.Update(joueur);
                     await _context.SaveChangesAsync();
-                    string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
-                    List<SqlParameter> parameters = new List<SqlParameter>
-                     {
-                         new SqlParameter{ParameterName = "@NAS", Value = image.Nas},
-                         new SqlParameter{ParameterName = "@JoueurId", Value = joueur.JoueurId}
+                   await chiffrement(image.Nas, joueur.JoueurId); 
 
-                          };
-                    await _context.Database.ExecuteSqlRawAsync(query, parameters);
-                }
+                } else 
+                { 
+                    await chiffrement(image.Nas, joueur.JoueurId); 
+ 
+                } 
+
                 return RedirectToAction(nameof(Index));
             }
             ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "Nom", image.Joueurs.Nom);
@@ -229,14 +228,8 @@ namespace BD_Final_Project.Controllers
                             joueur.Images.Add(i);
                             _context.Update(joueur);
                             await _context.SaveChangesAsync();
-                            string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
-                            List<SqlParameter> parameters = new List<SqlParameter>
-                     {
-                         new SqlParameter{ParameterName = "@NAS", Value = image.Nas},
-                         new SqlParameter{ParameterName = "@JoueurId", Value = image.Joueurs.JoueurId}
+                                                await chiffrement(image.Nas, image.Joueurs.JoueurId); 
 
-                          };
-                            await _context.Database.ExecuteSqlRawAsync(query, parameters);
 
                         }
                         else
@@ -244,28 +237,16 @@ namespace BD_Final_Project.Controllers
                             joueur.Images.FirstOrDefault().Photo = fichier;
                             _context.Update(joueur);
                             await _context.SaveChangesAsync();
-                            string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
-                            List<SqlParameter> parameters = new List<SqlParameter>
-                     {
-                         new SqlParameter{ParameterName = "@NAS", Value = image.Nas},
-                         new SqlParameter{ParameterName = "@JoueurId", Value = image.Joueurs.JoueurId}
+                                               await chiffrement(image.Nas, image.Joueurs.JoueurId); 
 
-                          };
-                            await _context.Database.ExecuteSqlRawAsync(query, parameters);
                         }
 
 
                     }
                     else
                     {
-                        string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
-                        List<SqlParameter> parameters = new List<SqlParameter>
-                     {
-                         new SqlParameter{ParameterName = "@NAS", Value = image.Nas},
-                         new SqlParameter{ParameterName = "@JoueurId", Value = image.Joueurs.JoueurId}
+                                           await chiffrement(image.Nas, image.Joueurs.JoueurId); 
 
-                          };
-                        await _context.Database.ExecuteSqlRawAsync(query, parameters);
 
                     }
 
@@ -288,50 +269,6 @@ namespace BD_Final_Project.Controllers
         }
 
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> EditNAS(int JoueurId, string Nas, [Bind("FormFile,Joueurs")] ImageUploadVM image)
-        //{
-        //    Joueur joueur = await _context.Joueurs.FindAsync(JoueurId);
-
-        //    if (JoueurId != joueur.JoueurId || joueur == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-
-          
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId";
-        //            List<SqlParameter> parameters = new List<SqlParameter>
-        //             {
-        //                 new SqlParameter{ParameterName = "@NAS", Value = Nas},
-        //                 new SqlParameter{ParameterName = "@JoueurId", Value = JoueurId}
-
-        //                  };
-        //            await _context.Database.ExecuteSqlRawAsync(query, parameters);
-
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!JoueurExists(joueur.JoueurId))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "EquipeId", joueur.EquipeId);
-        //    return View("Edit",joueur);
-        //}
 
 
         [HttpPost]
@@ -350,15 +287,8 @@ namespace BD_Final_Project.Controllers
 
             if (Nas != null && Nas !="" && JoueurId != 0)
             {
-                string query = "EXEC Equipes.USP_DEChiffrement @NAS, @JoueurId, @AdminKey";
-                List<SqlParameter> parameters = new List<SqlParameter>
-                     {
-                         new SqlParameter{ParameterName = "@NAS", Value = Nas},
-                         new SqlParameter{ParameterName = "@JoueurId", Value = JoueurId},
-                         new SqlParameter{ParameterName = "@AdminKey", Value = ""}
-                          };
-                JoueurRetour? joueurRetour = (await _context.JoueurRetours.FromSqlRaw(query, parameters.ToArray()).ToListAsync()).FirstOrDefault();
-
+               
+                    JoueurRetour? joueurRetour = await Dechiffrement(Nas,JoueurId); 
                 JoueurDechiffrerVM joueurDechiffrerVM = new JoueurDechiffrerVM
                 {
                     joueurRetour = joueurRetour,
@@ -440,7 +370,7 @@ namespace BD_Final_Project.Controllers
             if (joueur == null)
             {
                 ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "Nom");
-                ModelState.AddModelError("", "Ce joueur n'existe pas.");
+                ModelState.AddModelError("", "Ce joueur n'existe pas ou ne joue pas pour ce club");
                 return View();
             }
 
@@ -450,6 +380,32 @@ namespace BD_Final_Project.Controllers
             ViewData["EquipeId"] = new SelectList(_context.Equipes, "EquipeId", "Nom");
             return View(jpvm);
         }
+
+          public async Task chiffrement(string Nas,int JoueurId) 
+        { 
+            string query = "EXEC Equipes.USP_ChangeNasChiffrement @NAS, @JoueurId"; 
+            List<SqlParameter> parameters = new List<SqlParameter> 
+                     { 
+                         new SqlParameter{ParameterName = "@NAS", Value = Nas}, 
+                         new SqlParameter{ParameterName = "@JoueurId", Value = JoueurId} 
+ 
+                          }; 
+            await _context.Database.ExecuteSqlRawAsync(query, parameters); 
+ 
+        } 
+        public async Task<JoueurRetour> Dechiffrement(string Nas,int JoueurId) 
+        { 
+            string query = "EXEC Equipes.USP_DEChiffrement @NAS, @JoueurId, @AdminKey"; 
+            List<SqlParameter> parameters = new List<SqlParameter> 
+                     { 
+                         new SqlParameter{ParameterName = "@NAS", Value = Nas}, 
+                         new SqlParameter{ParameterName = "@JoueurId", Value = JoueurId}, 
+                         new SqlParameter{ParameterName = "@AdminKey", Value = ""} 
+                          }; 
+            JoueurRetour? joueurRetour = (await _context.JoueurRetours.FromSqlRaw(query, parameters.ToArray()).ToListAsync()).FirstOrDefault(); 
+            return joueurRetour; 
+        } 
+
 
 
     }

@@ -21,7 +21,7 @@ namespace BD_Final_Project.Controllers
         }
 
         // GET: Equipes
-        public async Task<IActionResult> AncienIndex(int id)
+        public async Task<IActionResult> DetailSuplementaire(int id)
         {
             Equipe equipe = await _context.Equipes.FindAsync(id);
             if(equipe == null) { return NotFound(); }

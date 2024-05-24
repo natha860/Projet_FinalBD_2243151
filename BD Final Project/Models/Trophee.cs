@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BD_Final_Project.Models
 {
     [Table("Trophee", Schema = "Equipes")]
-    [Index("Nom", Name = "UQ__Trophee__C7D1C61E9E97ACC8", IsUnique = true)]
+    [Index("Nom", Name = "UQ__Trophee__C7D1C61EE2110574", IsUnique = true)]
     public partial class Trophee
     {
         public Trophee()

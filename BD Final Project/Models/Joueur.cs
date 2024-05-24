@@ -8,7 +8,7 @@ namespace BD_Final_Project.Models
 {
     [Table("Joueur", Schema = "Equipes")]
     [Index("Nom", "EquipeId", Name = "IX_Joueur_NomEquipe")]
-    [Index("Nom", Name = "UQ__Joueur__C7D1C61EEC7581B8", IsUnique = true)]
+    [Index("Nom", Name = "UQ__Joueur__C7D1C61E57A6C13E", IsUnique = true)]
     public partial class Joueur
     {
         public Joueur()

@@ -64,6 +64,7 @@ namespace BD_Final_Project.Data
                 entity.HasOne(d => d.Joueur)
                     .WithMany(p => p.Images)
                     .HasForeignKey(d => d.JoueurId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_Images_JoueurID");
             });
 
